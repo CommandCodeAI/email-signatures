@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Signature Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #000000;
+            --bg-secondary: #0a0a0a;
+            --border: #1a1a1a;
+            --border-light: #2a2a2a;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #ffffff;
+            --editor-link: #6ea8fe;
+        }
+
+        body {
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 90vw;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                width: 90vw;
+            }
+        }
+
+        .header-section {
+            border: 1px solid var(--border);
+            border-bottom: none;
+            position: relative;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .corner-box {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: 3px;
+            z-index: 99;
+        }
+
+        @media (min-width: 640px) {
+            .corner-box {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        .corner-tl { top: 0; left: 0; transform: translate(-50%, -50%); }
+        .corner-tr { top: 0; right: 0; transform: translate(50%, -50%); }
+        .corner-bl { bottom: 0; left: 0; transform: translate(-50%, 50%); }
+        .corner-br { bottom: 0; right: 0; transform: translate(50%, 50%); }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .comment-prefix {
+            color: var(--text-dim);
+            margin-right: 8px;
+            letter-spacing: -0.2em;
+        }
+
+        .help-link {
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.2s;
+        }
+
+        .help-link:hover {
+            color: var(--text);
+        }
+
+        .main-content {
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 1000px) {
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel {
+            padding: 24px;
+            position: relative;
+        }
+
+        @media (min-width: 1000px) {
+            .panel:first-child {
+                border-right: 1px solid var(--border);
+            }
+        }
+
+        @media (max-width: 999px) {
+            .panel:first-child {
+                border-bottom: 1px solid var(--border);
+            }
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title .comment {
+            color: var(--text-dim);
+            letter-spacing: -0.15em;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--text-muted);
+            background: var(--bg);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        @media (min-width: 500px) {
+            .form-grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .signature-preview {
+            background: #ffffff;
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .preview-label {
+            position: absolute;
+            top: -10px;
+            left: 12px;
+            background: var(--bg);
+            padding: 0 8px;
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .btn-primary:hover {
+            background: var(--text-muted);
+            border-color: var(--text-muted);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border-color: var(--border-light);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-muted);
+        }
+
+        .btn-small {
+            padding: 7px 14px;
+            font-size: 11px;
+        }
+
+        .btn-add {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .copy-feedback {
+            display: none;
+            color: var(--text);
+            font-size: 11px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .copy-feedback.show {
+            display: block;
+        }
+
+        .footer-section {
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .footer-section p {
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        .email-signature {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dim);
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+
+        .editor-scroll {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .rich-editor {
+            min-height: 36px;
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.2s, background-color 0.2s;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .rich-editor:focus {
+            border-color: var(--text-muted);
+            background: var(--bg);
+        }
+
+        .rich-editor:empty:before {
+            content: attr(data-placeholder);
+            color: var(--text-dim);
+        }
+
+        .rich-editor a {
+            color: var(--editor-link) !important;
+            text-decoration: underline;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 3px;
+            padding: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            padding: 5px 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            background: var(--border);
+            margin: 0 3px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal-title {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--text);
+            padding-right: 30px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 14px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .help-content ol {
+            padding-left: 20px;
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .help-content li {
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            position: relative;
+            padding-left: 8px;
+            font-size: 13px;
+        }
+
+        .help-content li::before {
+            counter-increment: step;
+            content: counter(step, decimal-leading-zero);
+            position: absolute;
+            left: -24px;
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        .help-content strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .help-content code {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+        .help-content a {
+            color: var(--text);
+            text-decoration: underline;
+        }
+
+        .help-tip {
+            margin-top: 20px;
+            padding: 12px;
+            border-left: 2px solid var(--border-light);
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+
+        .help-tip strong {
+            color: var(--text-muted);
+        }
+
+        .credential-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .credential-item .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .btn-remove {
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background: #331111;
+            border-color: #663333;
+            color: #ff6666;
+        }
+
+        .social-link-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .social-link-item .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .inline-editor-wrapper {
+            margin-bottom: 14px;
+        }
+
+        .inline-editor-wrapper label {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mini-toolbar {
+            display: flex;
+            gap: 2px;
+            padding: 4px 5px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-bottom: none;
+        }
+
+        .mini-toolbar .toolbar-btn {
+            padding: 3px 7px;
+            font-size: 10px;
+        }
+
+        .inline-editor {
+            min-height: 36px;
+            padding: 9px 11px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text);
+            transition: border-color 0.2s, background-color 0.2s;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        .inline-editor:focus {
+            border-color: var(--text-muted);
+            background: var(--bg);
+        }
+
+        .inline-editor:empty:before {
+            content: attr(data-placeholder);
+            color: var(--text-dim);
+        }
+
+        .inline-editor a {
+            color: var(--editor-link) !important;
+            text-decoration: underline;
+        }
+
+        .preview-panel {
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <div class="corner-box corner-tl"></div>
+            <div class="corner-box corner-tr"></div>
+            <div class="header-left">
+                <h1><span class="comment-prefix">//</span>Email Signature</h1>
+                <span class="help-link" onclick="openHelpModal()">How to add to Gmail?</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="corner-box corner-bl"></div>
+            <div class="corner-box corner-br"></div>
+
+            <div class="content-grid">
+                <div class="panel">
+                    <h3 class="panel-title"><span class="comment">//</span> Customize</h3>
+                    
+                    <div class="editor-scroll">
+                        <div class="form-section">
+                            <div class="form-section-title">Personal Info</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="name" value="AHMAD AWAIS" oninput="updatePreview()">
+                                </div>
+                                <div class="inline-editor-wrapper">
+                                    <label>Role/Title</label>
+                                    <div class="mini-toolbar">
+                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'roleEditor')" title="Bold"><b>B</b></button>
+                                        <button class="toolbar-btn" onclick="openInlineLinkModal('roleEditor')" title="Link">Link</button>
+                                    </div>
+                                    <div class="inline-editor" id="roleEditor" contenteditable="true" data-placeholder="CEO & Founder" oninput="updatePreview()" onpaste="handlePaste(event)">CEO &amp; Founder</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Companies</div>
+                            <div class="form-grid form-grid-2">
+                                <div class="inline-editor-wrapper">
+                                    <label>Company 1</label>
+                                    <div class="mini-toolbar">
+                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'company1Editor')" title="Bold"><b>B</b></button>
+                                        <button class="toolbar-btn" onclick="openInlineLinkModal('company1Editor')" title="Link">Link</button>
+                                    </div>
+                                    <div class="inline-editor" id="company1Editor" contenteditable="true" data-placeholder="Company name" oninput="updatePreview()" onpaste="handlePaste(event)"><a href="https://langbase.com">Langbase.com</a></div>
+                                </div>
+                                <div class="inline-editor-wrapper">
+                                    <label>Company 2</label>
+                                    <div class="mini-toolbar">
+                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'company2Editor')" title="Bold"><b>B</b></button>
+                                        <button class="toolbar-btn" onclick="openInlineLinkModal('company2Editor')" title="Link">Link</button>
+                                    </div>
+                                    <div class="inline-editor" id="company2Editor" contenteditable="true" data-placeholder="Optional" oninput="updatePreview()" onpaste="handlePaste(event)"><a href="https://commandcode.ai">CommandCode.ai</a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Taglines (Optional)</div>
+                            <div class="form-grid form-grid-2">
+                                <div class="inline-editor-wrapper">
+                                    <label>Tagline 1</label>
+                                    <div class="mini-toolbar">
+                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'tagline1Editor')" title="Bold"><b>B</b></button>
+                                        <button class="toolbar-btn" onclick="openInlineLinkModal('tagline1Editor')" title="Link">Link</button>
+                                    </div>
+                                    <div class="inline-editor" id="tagline1Editor" contenteditable="true" data-placeholder="e.g., AI cloud in one line" oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                                </div>
+                                <div class="inline-editor-wrapper">
+                                    <label>Tagline 2</label>
+                                    <div class="mini-toolbar">
+                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'tagline2Editor')" title="Bold"><b>B</b></button>
+                                        <button class="toolbar-btn" onclick="openInlineLinkModal('tagline2Editor')" title="Link">Link</button>
+                                    </div>
+                                    <div class="inline-editor" id="tagline2Editor" contenteditable="true" data-placeholder="e.g., Coding agent" oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Social Links (Optional)</div>
+                            <div id="socialLinksContainer">
+                                <div class="social-link-item">
+                                    <div class="form-group" style="flex: 0 0 90px;">
+                                        <label>Platform</label>
+                                        <input type="text" value="LinkedIn" oninput="updatePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>URL</label>
+                                        <input type="text" placeholder="https://linkedin.com/in/..." oninput="updatePreview()">
+                                    </div>
+                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
+                                </div>
+                                <div class="social-link-item">
+                                    <div class="form-group" style="flex: 0 0 90px;">
+                                        <label>Platform</label>
+                                        <input type="text" value="GitHub" oninput="updatePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>URL</label>
+                                        <input type="text" placeholder="https://github.com/..." oninput="updatePreview()">
+                                    </div>
+                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
+                                </div>
+                                <div class="social-link-item">
+                                    <div class="form-group" style="flex: 0 0 90px;">
+                                        <label>Platform</label>
+                                        <input type="text" value="X/Twitter" oninput="updatePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>URL</label>
+                                        <input type="text" placeholder="https://twitter.com/..." oninput="updatePreview()">
+                                    </div>
+                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-small btn-add" onclick="addSocialLink()">+ Add Social Link</button>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Credentials (Optional)</div>
+                            <div id="credentialsContainer">
+                            </div>
+                            <button class="btn btn-outline btn-small btn-add" onclick="addCredential()">+ Add Credential</button>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-section-title">Colors</div>
+                            <div class="form-grid form-grid-2">
+                                <div class="form-group">
+                                    <label>Name Background</label>
+                                    <input type="color" id="colorNameBg" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Name Text</label>
+                                    <input type="color" id="colorNameText" value="#ffffff" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Body Text</label>
+                                    <input type="color" id="colorBodyText" value="#333333" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Link Color</label>
+                                    <input type="color" id="colorLink" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Muted Text</label>
+                                    <input type="color" id="colorMuted" value="#666666" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Credential Border</label>
+                                    <input type="color" id="colorCredBorder" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="preview-panel">
+                        <h3 class="panel-title"><span class="comment">//</span> Preview</h3>
+                        
+                        <div class="signature-preview">
+                            <span class="preview-label">Output</span>
+                            <div id="signatureOutput" class="email-signature"></div>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="copySignature()">Copy Signature</button>
+                            <button class="btn btn-outline" onclick="copyHtml()">Copy HTML</button>
+                        </div>
+                        <p id="copyFeedback" class="copy-feedback">Copied to clipboard!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <p>Built with geometric precision</p>
+        </div>
+    </div>
+
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLinkModal()">×</button>
+            <div class="modal-title">Insert Link</div>
+            <div class="form-group">
+                <label>Link Text</label>
+                <input type="text" id="linkText" placeholder="Display text">
+            </div>
+            <div class="form-group">
+                <label>URL</label>
+                <input type="text" id="linkUrl" placeholder="https://example.com">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-outline btn-small" onclick="closeLinkModal()">Cancel</button>
+                <button class="btn btn-primary btn-small" onclick="insertLink()">Insert</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeHelpModal()">×</button>
+            <div class="modal-title">How to Add to Gmail</div>
+            <div class="help-content">
+                <ol>
+                    <li>Click the <strong>Copy Signature</strong> button</li>
+                    <li>Open <a href="https://mail.google.com" target="_blank">Gmail</a> in your browser</li>
+                    <li>Click the <strong>Settings gear icon</strong> in the top right</li>
+                    <li>Click <strong>See all settings</strong></li>
+                    <li>Scroll down to the <strong>Signature</strong> section</li>
+                    <li>Click <strong>+ Create new</strong> and give it a name</li>
+                    <li>Click inside the signature text box and press <code>Ctrl+V</code> (Windows) or <code>Cmd+V</code> (Mac) to paste</li>
+                    <li>Scroll to the bottom and click <strong>Save Changes</strong></li>
+                </ol>
+                <div class="help-tip">
+                    <strong>Tip:</strong> Make sure to select your new signature as the default for new emails and replies in the signature settings.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let activeEditor = null;
+        let savedSelection = null;
+
+        function openHelpModal() {
+            document.getElementById('helpModal').classList.add('show');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('show');
+        }
+
+        function getSocialLinks() {
+            const links = [];
+            document.querySelectorAll('.social-link-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                const platform = inputs[0].value.trim();
+                const url = inputs[1].value.trim();
+                if (platform && url) {
+                    links.push({ platform, url });
+                }
+            });
+            return links;
+        }
+
+        function getCredentials() {
+            const creds = [];
+            document.querySelectorAll('.credential-item').forEach(item => {
+                const editor = item.querySelector('.rich-editor');
+                if (editor) {
+                    const html = editor.innerHTML.trim();
+                    if (html && html !== '<br>') {
+                        creds.push(html);
+                    }
+                }
+            });
+            return creds;
+        }
+
+        function addSocialLink() {
+            const container = document.getElementById('socialLinksContainer');
+            const item = document.createElement('div');
+            item.className = 'social-link-item';
+            item.innerHTML = `
+                <div class="form-group" style="flex: 0 0 90px;">
+                    <label>Platform</label>
+                    <input type="text" placeholder="Platform" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label>URL</label>
+                    <input type="text" placeholder="https://..." oninput="updatePreview()">
+                </div>
+                <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
+            `;
+            container.appendChild(item);
+        }
+
+        function removeSocialLink(btn) {
+            btn.parentElement.remove();
+            updatePreview();
+        }
+
+        function addCredential() {
+            const container = document.getElementById('credentialsContainer');
+            const item = document.createElement('div');
+            item.className = 'credential-item';
+            const id = 'cred_' + Date.now();
+            item.innerHTML = `
+                <div class="form-group" style="flex: 1;">
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn" onclick="execCmd('bold', this)" title="Bold"><b>B</b></button>
+                        <button class="toolbar-btn" onclick="execCmd('italic', this)" title="Italic"><i>I</i></button>
+                        <div class="toolbar-separator"></div>
+                        <button class="toolbar-btn" onclick="openLinkModal(this)" title="Insert Link">Link</button>
+                    </div>
+                    <div class="rich-editor" id="${id}" contenteditable="true" data-placeholder="Enter credential..." oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                </div>
+                <button class="btn-remove" onclick="removeCredential(this)" title="Remove">×</button>
+            `;
+            container.appendChild(item);
+        }
+
+        function removeCredential(btn) {
+            btn.parentElement.remove();
+            updatePreview();
+        }
+
+        function execCmd(cmd, btn) {
+            const toolbar = btn.closest('.editor-toolbar');
+            const editor = toolbar.nextElementSibling;
+            editor.focus();
+            document.execCommand(cmd, false, null);
+            updatePreview();
+        }
+
+        function execInlineCmd(cmd, editorId) {
+            const editor = document.getElementById(editorId);
+            editor.focus();
+            document.execCommand(cmd, false, null);
+            updatePreview();
+        }
+
+        function openLinkModal(btn) {
+            const toolbar = btn.closest('.editor-toolbar');
+            activeEditor = toolbar.nextElementSibling;
+            
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                savedSelection = selection.getRangeAt(0).cloneRange();
+                document.getElementById('linkText').value = selection.toString();
+            }
+            
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkModal').classList.add('show');
+        }
+
+        function openInlineLinkModal(editorId) {
+            activeEditor = document.getElementById(editorId);
+            activeEditor.focus();
+            
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                savedSelection = selection.getRangeAt(0).cloneRange();
+                document.getElementById('linkText').value = selection.toString();
+            }
+            
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkModal').classList.add('show');
+        }
+
+        function closeLinkModal() {
+            document.getElementById('linkModal').classList.remove('show');
+            activeEditor = null;
+            savedSelection = null;
+        }
+
+        function insertLink() {
+            const text = document.getElementById('linkText').value;
+            const url = document.getElementById('linkUrl').value;
+            
+            if (!url) {
+                closeLinkModal();
+                return;
+            }
+            
+            if (activeEditor && savedSelection) {
+                activeEditor.focus();
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(savedSelection);
+                
+                const linkHtml = `<a href="${url}">${text || url}</a>`;
+                document.execCommand('insertHTML', false, linkHtml);
+            }
+            
+            closeLinkModal();
+            updatePreview();
+        }
+
+        function handlePaste(e) {
+            const clipboardData = e.clipboardData || window.clipboardData;
+            const pastedText = clipboardData.getData('text');
+            
+            if (pastedText.match(/^https?:\/\//)) {
+                e.preventDefault();
+                const selection = window.getSelection();
+                const selectedText = selection.toString();
+                
+                if (selectedText) {
+                    const linkHtml = `<a href="${pastedText}">${selectedText}</a>`;
+                    document.execCommand('insertHTML', false, linkHtml);
+                } else {
+                    const linkHtml = `<a href="${pastedText}">${pastedText}</a>`;
+                    document.execCommand('insertHTML', false, linkHtml);
+                }
+                updatePreview();
+            }
+        }
+
+        function getEditorContent(id) {
+            const el = document.getElementById(id);
+            if (!el) return '';
+            const html = el.innerHTML.trim();
+            if (!html || html === '<br>') return '';
+            return html;
+        }
+
+        function processHtmlForOutput(html, linkColor) {
+            if (!html) return '';
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            temp.querySelectorAll('a').forEach(a => {
+                a.style.color = linkColor;
+                a.style.textDecoration = 'underline';
+            });
+            temp.querySelectorAll('font[color]').forEach(font => {
+                const span = document.createElement('span');
+                span.style.color = font.getAttribute('color');
+                span.innerHTML = font.innerHTML;
+                font.replaceWith(span);
+            });
+            return temp.innerHTML;
+        }
+
+        function getSignatureHtml() {
+            const name = document.getElementById('name').value;
+            const role = getEditorContent('roleEditor');
+            const company1 = getEditorContent('company1Editor');
+            const company2 = getEditorContent('company2Editor');
+            const tagline1 = getEditorContent('tagline1Editor');
+            const tagline2 = getEditorContent('tagline2Editor');
+            
+            const colorNameBg = document.getElementById('colorNameBg').value;
+            const colorNameText = document.getElementById('colorNameText').value;
+            const colorBodyText = document.getElementById('colorBodyText').value;
+            const colorLink = document.getElementById('colorLink').value;
+            const colorMuted = document.getElementById('colorMuted').value;
+            const colorCredBorder = document.getElementById('colorCredBorder').value;
+
+            const socialLinks = getSocialLinks();
+            const credentials = getCredentials();
+
+            const roleHtml = processHtmlForOutput(role, colorLink);
+            const company1Html = processHtmlForOutput(company1, colorLink);
+            const company2Html = processHtmlForOutput(company2, colorLink);
+            const tagline1Html = processHtmlForOutput(tagline1, colorLink);
+            const tagline2Html = processHtmlForOutput(tagline2, colorLink);
+
+            let html = `<table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: ${colorBodyText};">
+    <tr>
+        <td style="padding-bottom: 12px;">
+            <span style="display: inline-block; background: ${colorNameBg}; color: ${colorNameText}; font-size: 14px; font-weight: bold; padding: 6px 12px;">${name}</span>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-bottom: 4px;">
+            <span style="color: ${colorBodyText};">❯ ${roleHtml} </span>
+            ${company1Html}`;
+            
+            if (company2Html) {
+                html += `
+            <span style="color: ${colorBodyText};"> // ⌘ </span>
+            ${company2Html}`;
+            }
+            
+            html += `
+        </td>
+    </tr>`;
+
+            if (tagline1Html || tagline2Html) {
+                let taglineContent = '';
+                if (tagline1Html && tagline2Html) {
+                    taglineContent = `❯ ${tagline1Html} // ${tagline2Html}`;
+                } else if (tagline1Html) {
+                    taglineContent = `❯ ${tagline1Html}`;
+                } else if (tagline2Html) {
+                    taglineContent = `❯ ${tagline2Html}`;
+                }
+                html += `
+    <tr>
+        <td style="padding-bottom: 16px;">
+            <span style="color: ${colorBodyText};">${taglineContent}</span>
+        </td>
+    </tr>`;
+            }
+
+            if (socialLinks.length > 0) {
+                html += `
+    <tr>
+        <td style="padding-bottom: 16px;">`;
+                socialLinks.forEach((link, i) => {
+                    if (i > 0) {
+                        html += `
+            <span style="color: ${colorMuted};"> | </span>`;
+                    }
+                    html += `
+            <a href="${link.url}" style="color: ${colorLink}; text-decoration: underline;">${link.platform}</a>`;
+                });
+                html += `
+        </td>
+    </tr>`;
+            }
+
+            if (credentials.length > 0) {
+                html += `
+    <tr>
+        <td style="border-left: 3px solid ${colorCredBorder}; padding-left: 12px; font-size: 13px; color: ${colorMuted}; line-height: 1.8;">`;
+                credentials.forEach((cred, i) => {
+                    const processedCred = processHtmlForOutput(cred, colorLink);
+                    if (i > 0) html += '<br>';
+                    html += processedCred;
+                });
+                html += `
+        </td>
+    </tr>`;
+            }
+
+            html += `
+</table>`;
+
+            return html;
+        }
+
+        function updatePreview() {
+            document.getElementById('signatureOutput').innerHTML = getSignatureHtml();
+        }
+
+        function copySignature() {
+            const html = getSignatureHtml();
+            const blob = new Blob([html], { type: 'text/html' });
+            const plainBlob = new Blob([document.getElementById('signatureOutput').innerText], { type: 'text/plain' });
+            
+            navigator.clipboard.write([
+                new ClipboardItem({
+                    'text/html': blob,
+                    'text/plain': plainBlob
+                })
+            ]).then(() => {
+                showFeedback();
+            }).catch(() => {
+                const signatureEl = document.getElementById('signatureOutput');
+                const range = document.createRange();
+                range.selectNode(signatureEl);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                showFeedback();
+            });
+        }
+
+        function copyHtml() {
+            const html = getSignatureHtml();
+            navigator.clipboard.writeText(html).then(() => {
+                showFeedback();
+            });
+        }
+
+        function showFeedback() {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 2000);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            // Cmd/Ctrl + K to open link modal
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const activeEl = document.activeElement;
+                if (activeEl && (activeEl.classList.contains('inline-editor') || activeEl.classList.contains('rich-editor'))) {
+                    activeEditor = activeEl;
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        savedSelection = selection.getRangeAt(0).cloneRange();
+                        document.getElementById('linkText').value = selection.toString();
+                    }
+                    document.getElementById('linkUrl').value = '';
+                    document.getElementById('linkModal').classList.add('show');
+                    setTimeout(() => document.getElementById('linkUrl').focus(), 50);
+                }
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+                activeEditor = null;
+                savedSelection = null;
+            }
+            
+            // Enter to submit link modal
+            if (e.key === 'Enter' && document.getElementById('linkModal').classList.contains('show')) {
+                e.preventDefault();
+                insertLink();
+            }
+        });
+
+        updatePreview();
+    </script>
+</body>
+</html>
