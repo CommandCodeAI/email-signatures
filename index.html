@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Email Signature Generator</title>
     <style>
         * {
@@ -14,8 +15,10 @@
         :root {
             --bg: #000000;
             --bg-secondary: #0a0a0a;
+            --bg-input: #111111;
             --border: #1a1a1a;
             --border-light: #2a2a2a;
+            --border-focus: #444444;
             --text: #ffffff;
             --text-muted: #888888;
             --text-dim: #555555;
@@ -166,35 +169,39 @@
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
         }
 
         .form-group label {
             display: block;
-            font-size: 11px;
-            font-weight: 400;
+            font-size: 12px;
+            font-weight: 500;
             color: var(--text-muted);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
         }
 
         .form-group input {
             width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 0;
-            font-size: 13px;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            font-size: 14px;
             font-family: inherit;
             color: var(--text);
-            transition: border-color 0.2s, background-color 0.2s;
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--text-muted);
-            background: var(--bg);
+            border-color: var(--border-focus);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
         }
 
         .form-group input::placeholder {
@@ -204,7 +211,7 @@
         .form-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 14px;
+            gap: 16px;
         }
 
         @media (min-width: 500px) {
@@ -247,6 +254,7 @@
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
+            border-radius: 4px;
         }
 
         .btn-primary {
@@ -272,13 +280,14 @@
         }
 
         .btn-small {
-            padding: 7px 14px;
-            font-size: 11px;
+            padding: 8px 14px;
+            font-size: 12px;
         }
 
         .btn-add {
-            margin-top: 10px;
+            margin-top: 12px;
             width: 100%;
+            border-style: dashed;
         }
 
         .button-group {
@@ -336,8 +345,8 @@
         }
 
         .form-section {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -348,11 +357,21 @@
         }
 
         .form-section-title {
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--text-dim);
-            margin-bottom: 14px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
 
         .editor-scroll {
@@ -363,20 +382,22 @@
 
         .rich-editor {
             min-height: 36px;
-            padding: 10px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            font-size: 13px;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            border-radius: 0 0 4px 4px;
+            font-size: 14px;
             font-family: inherit;
             color: var(--text);
-            transition: border-color 0.2s, background-color 0.2s;
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
             outline: none;
             line-height: 1.5;
         }
 
         .rich-editor:focus {
-            border-color: var(--text-muted);
-            background: var(--bg);
+            border-color: var(--border-focus);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
         }
 
         .rich-editor:empty:before {
@@ -391,34 +412,37 @@
 
         .editor-toolbar {
             display: flex;
-            gap: 3px;
-            padding: 6px;
+            gap: 4px;
+            padding: 8px 10px;
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-light);
             border-bottom: none;
+            border-radius: 4px 4px 0 0;
             flex-wrap: wrap;
         }
 
         .toolbar-btn {
-            padding: 5px 8px;
+            padding: 6px 10px;
             background: transparent;
-            border: 1px solid var(--border);
+            border: 1px solid transparent;
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
+            border-radius: 3px;
         }
 
         .toolbar-btn:hover {
             background: var(--border);
             color: var(--text);
+            border-color: var(--border-light);
         }
 
         .toolbar-separator {
             width: 1px;
             background: var(--border);
-            margin: 0 3px;
+            margin: 0 4px;
         }
 
         .modal {
@@ -447,6 +471,7 @@
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
+            border-radius: 8px;
         }
 
         .modal-close {
@@ -518,6 +543,7 @@
             padding: 2px 6px;
             font-size: 11px;
             font-family: inherit;
+            border-radius: 3px;
         }
 
         .help-content a {
@@ -541,7 +567,7 @@
             display: flex;
             gap: 8px;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .credential-item .form-group {
@@ -550,13 +576,15 @@
         }
 
         .btn-remove {
-            padding: 10px;
+            padding: 10px 12px;
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-dim);
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
+            border-radius: 4px;
+            margin-top: 26px;
         }
 
         .btn-remove:hover {
@@ -569,7 +597,7 @@
             display: flex;
             gap: 8px;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .social-link-item .form-group {
@@ -577,50 +605,60 @@
             margin-bottom: 0;
         }
 
+        .social-link-item .btn-remove {
+            margin-top: 26px;
+        }
+
         .inline-editor-wrapper {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .inline-editor-wrapper:last-child {
+            margin-bottom: 0;
         }
 
         .inline-editor-wrapper label {
             display: block;
-            font-size: 11px;
-            font-weight: 400;
+            font-size: 12px;
+            font-weight: 500;
             color: var(--text-muted);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            letter-spacing: 0.02em;
         }
 
         .mini-toolbar {
             display: flex;
-            gap: 2px;
-            padding: 4px 5px;
+            gap: 4px;
+            padding: 6px 8px;
             background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-light);
             border-bottom: none;
+            border-radius: 4px 4px 0 0;
         }
 
         .mini-toolbar .toolbar-btn {
-            padding: 3px 7px;
-            font-size: 10px;
+            padding: 4px 8px;
+            font-size: 11px;
         }
 
         .inline-editor {
-            min-height: 36px;
-            padding: 9px 11px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            font-size: 13px;
+            min-height: 42px;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            border-radius: 0 0 4px 4px;
+            font-size: 14px;
             font-family: inherit;
             color: var(--text);
-            transition: border-color 0.2s, background-color 0.2s;
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
             outline: none;
             line-height: 1.4;
         }
 
         .inline-editor:focus {
-            border-color: var(--text-muted);
-            background: var(--bg);
+            border-color: var(--border-focus);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
         }
 
         .inline-editor:empty:before {
@@ -636,6 +674,91 @@
         .preview-panel {
             position: sticky;
             top: 20px;
+        }
+
+        .field-hint {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .field-hint kbd {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-family: inherit;
+        }
+
+        .collapsible-section {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            cursor: pointer;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background: var(--bg-input);
+        }
+
+        .collapsible-header .section-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        .collapsible-header .toggle-icon {
+            color: var(--text-dim);
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .collapsible-section.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 16px 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .collapsible-section.open .collapsible-content {
+            display: block;
+        }
+
+        .collapsible-section.open .collapsible-header {
+            border-radius: 4px 4px 0 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -656,144 +779,101 @@
 
             <div class="content-grid">
                 <div class="panel">
-                    <h3 class="panel-title"><span class="comment">//</span> Customize</h3>
-                    
+                    <h3 class="panel-title"><span class="comment">//</span> Editor</h3>
+
                     <div class="editor-scroll">
                         <div class="form-section">
-                            <div class="form-section-title">Personal Info</div>
-                            <div class="form-grid">
+                            <div class="form-section-title">Basic Info</div>
+                            <div class="form-grid form-grid-2">
                                 <div class="form-group">
                                     <label>Full Name</label>
-                                    <input type="text" id="name" value="AHMAD AWAIS" oninput="updatePreview()">
+                                    <input type="text" id="name" value="YOUR NAME" placeholder="Enter your name" oninput="updatePreview()">
                                 </div>
-                                <div class="inline-editor-wrapper">
-                                    <label>Role/Title</label>
-                                    <div class="mini-toolbar">
-                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'roleEditor')" title="Bold"><b>B</b></button>
-                                        <button class="toolbar-btn" onclick="openInlineLinkModal('roleEditor')" title="Link">Link</button>
-                                    </div>
-                                    <div class="inline-editor" id="roleEditor" contenteditable="true" data-placeholder="CEO & Founder" oninput="updatePreview()" onpaste="handlePaste(event)">CEO &amp; Founder</div>
+                                <div class="form-group">
+                                    <label>Name Link (optional)</label>
+                                    <input type="text" id="nameLink" placeholder="https://twitter.com/..." oninput="updatePreview()">
                                 </div>
+                            </div>
+                            <div class="inline-editor-wrapper">
+                                <label>Role & Company</label>
+                                <div class="mini-toolbar">
+                                    <button class="toolbar-btn" onclick="execInlineCmd('bold', 'roleEditor')" title="Bold"><b>B</b></button>
+                                    <button class="toolbar-btn" onclick="openInlineLinkModal('roleEditor')" title="Add Link">Link</button>
+                                </div>
+                                <div class="inline-editor" id="roleEditor" contenteditable="true" data-placeholder="e.g., Developer at Company" oninput="updatePreview()" onpaste="handlePaste(event)">ROLE at ⌘ <a href="https://commandcode.ai">CommandCode.ai</a></div>
+                                <div class="field-hint">Select text + <kbd>⌘K</kbd> to add link · Use // to separate companies</div>
                             </div>
                         </div>
 
                         <div class="form-section">
-                            <div class="form-section-title">Companies</div>
-                            <div class="form-grid form-grid-2">
-                                <div class="inline-editor-wrapper">
-                                    <label>Company 1</label>
-                                    <div class="mini-toolbar">
-                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'company1Editor')" title="Bold"><b>B</b></button>
-                                        <button class="toolbar-btn" onclick="openInlineLinkModal('company1Editor')" title="Link">Link</button>
-                                    </div>
-                                    <div class="inline-editor" id="company1Editor" contenteditable="true" data-placeholder="Company name" oninput="updatePreview()" onpaste="handlePaste(event)"><a href="https://langbase.com">Langbase.com</a></div>
+                            <div class="form-section-title">Tagline (Optional)</div>
+                            <div class="inline-editor-wrapper">
+                                <label>Short Description</label>
+                                <div class="mini-toolbar">
+                                    <button class="toolbar-btn" onclick="execInlineCmd('bold', 'taglineEditor')" title="Bold"><b>B</b></button>
+                                    <button class="toolbar-btn" onclick="openInlineLinkModal('taglineEditor')" title="Add Link">Link</button>
                                 </div>
-                                <div class="inline-editor-wrapper">
-                                    <label>Company 2</label>
-                                    <div class="mini-toolbar">
-                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'company2Editor')" title="Bold"><b>B</b></button>
-                                        <button class="toolbar-btn" onclick="openInlineLinkModal('company2Editor')" title="Link">Link</button>
-                                    </div>
-                                    <div class="inline-editor" id="company2Editor" contenteditable="true" data-placeholder="Optional" oninput="updatePreview()" onpaste="handlePaste(event)"><a href="https://commandcode.ai">CommandCode.ai</a></div>
-                                </div>
+                                <div class="inline-editor" id="taglineEditor" contenteditable="true" data-placeholder="e.g., Coding agent with your coding taste." oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                                <div class="field-hint">Use // to separate multiple taglines</div>
                             </div>
                         </div>
 
-                        <div class="form-section">
-                            <div class="form-section-title">Taglines (Optional)</div>
-                            <div class="form-grid form-grid-2">
-                                <div class="inline-editor-wrapper">
-                                    <label>Tagline 1</label>
-                                    <div class="mini-toolbar">
-                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'tagline1Editor')" title="Bold"><b>B</b></button>
-                                        <button class="toolbar-btn" onclick="openInlineLinkModal('tagline1Editor')" title="Link">Link</button>
-                                    </div>
-                                    <div class="inline-editor" id="tagline1Editor" contenteditable="true" data-placeholder="e.g., AI cloud in one line" oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span class="section-title">Social Links</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div id="socialLinksContainer">
                                 </div>
-                                <div class="inline-editor-wrapper">
-                                    <label>Tagline 2</label>
-                                    <div class="mini-toolbar">
-                                        <button class="toolbar-btn" onclick="execInlineCmd('bold', 'tagline2Editor')" title="Bold"><b>B</b></button>
-                                        <button class="toolbar-btn" onclick="openInlineLinkModal('tagline2Editor')" title="Link">Link</button>
-                                    </div>
-                                    <div class="inline-editor" id="tagline2Editor" contenteditable="true" data-placeholder="e.g., Coding agent" oninput="updatePreview()" onpaste="handlePaste(event)"></div>
-                                </div>
+                                <button class="btn btn-outline btn-small btn-add" onclick="addSocialLink()">+ Add Social Link</button>
                             </div>
                         </div>
 
-                        <div class="form-section">
-                            <div class="form-section-title">Social Links (Optional)</div>
-                            <div id="socialLinksContainer">
-                                <div class="social-link-item">
-                                    <div class="form-group" style="flex: 0 0 90px;">
-                                        <label>Platform</label>
-                                        <input type="text" value="LinkedIn" oninput="updatePreview()">
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span class="section-title">Credentials & Awards</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="field-hint" style="margin-bottom: 12px;">Each credential appears on its own line. Use · to separate items within a line.</div>
+                                <div id="credentialsContainer">
+                                </div>
+                                <button class="btn btn-outline btn-small btn-add" onclick="addCredential()">+ Add Credential Line</button>
+                            </div>
+                        </div>
+
+                        <div class="collapsible-section">
+                            <div class="collapsible-header" onclick="toggleSection(this)">
+                                <span class="section-title">Colors</span>
+                                <span class="toggle-icon">▼</span>
+                            </div>
+                            <div class="collapsible-content">
+                                <div class="form-grid form-grid-2">
+                                    <div class="form-group">
+                                        <label>Name Badge Background</label>
+                                        <input type="color" id="colorNameBg" value="#1e1e3f" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
                                     </div>
                                     <div class="form-group">
-                                        <label>URL</label>
-                                        <input type="text" placeholder="https://linkedin.com/in/..." oninput="updatePreview()">
-                                    </div>
-                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
-                                </div>
-                                <div class="social-link-item">
-                                    <div class="form-group" style="flex: 0 0 90px;">
-                                        <label>Platform</label>
-                                        <input type="text" value="GitHub" oninput="updatePreview()">
+                                        <label>Name Badge Text</label>
+                                        <input type="color" id="colorNameText" value="#ffffff" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
                                     </div>
                                     <div class="form-group">
-                                        <label>URL</label>
-                                        <input type="text" placeholder="https://github.com/..." oninput="updatePreview()">
-                                    </div>
-                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
-                                </div>
-                                <div class="social-link-item">
-                                    <div class="form-group" style="flex: 0 0 90px;">
-                                        <label>Platform</label>
-                                        <input type="text" value="X/Twitter" oninput="updatePreview()">
+                                        <label>Body Text</label>
+                                        <input type="color" id="colorBodyText" value="#444444" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
                                     </div>
                                     <div class="form-group">
-                                        <label>URL</label>
-                                        <input type="text" placeholder="https://twitter.com/..." oninput="updatePreview()">
+                                        <label>Link Color</label>
+                                        <input type="color" id="colorLink" value="#444444" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
                                     </div>
-                                    <button class="btn-remove" onclick="removeSocialLink(this)" title="Remove">×</button>
-                                </div>
-                            </div>
-                            <button class="btn btn-outline btn-small btn-add" onclick="addSocialLink()">+ Add Social Link</button>
-                        </div>
-
-                        <div class="form-section">
-                            <div class="form-section-title">Credentials (Optional)</div>
-                            <div id="credentialsContainer">
-                            </div>
-                            <button class="btn btn-outline btn-small btn-add" onclick="addCredential()">+ Add Credential</button>
-                        </div>
-
-                        <div class="form-section">
-                            <div class="form-section-title">Colors</div>
-                            <div class="form-grid form-grid-2">
-                                <div class="form-group">
-                                    <label>Name Background</label>
-                                    <input type="color" id="colorNameBg" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Name Text</label>
-                                    <input type="color" id="colorNameText" value="#ffffff" oninput="updatePreview()" style="height: 36px; padding: 3px;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Body Text</label>
-                                    <input type="color" id="colorBodyText" value="#333333" oninput="updatePreview()" style="height: 36px; padding: 3px;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Link Color</label>
-                                    <input type="color" id="colorLink" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Muted Text</label>
-                                    <input type="color" id="colorMuted" value="#666666" oninput="updatePreview()" style="height: 36px; padding: 3px;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Credential Border</label>
-                                    <input type="color" id="colorCredBorder" value="#000000" oninput="updatePreview()" style="height: 36px; padding: 3px;">
+                                    <div class="form-group">
+                                        <label>Separator Color</label>
+                                        <input type="color" id="colorSeparator" value="#9291b5" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Credential Text</label>
+                                        <input type="color" id="colorCredText" value="#8f8f8f" oninput="updatePreview()" style="height: 40px; padding: 4px; cursor: pointer;">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -803,7 +883,7 @@
                 <div class="panel">
                     <div class="preview-panel">
                         <h3 class="panel-title"><span class="comment">//</span> Preview</h3>
-                        
+
                         <div class="signature-preview">
                             <span class="preview-label">Output</span>
                             <div id="signatureOutput" class="email-signature"></div>
@@ -820,7 +900,7 @@
         </div>
 
         <div class="footer-section">
-            <p>Built with geometric precision</p>
+            <p>Built for ⌘ CommandCode.ai</p>
         </div>
     </div>
 
@@ -877,6 +957,11 @@
             document.getElementById('helpModal').classList.remove('show');
         }
 
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('open');
+        }
+
         function getSocialLinks() {
             const links = [];
             document.querySelectorAll('.social-link-item').forEach(item => {
@@ -909,9 +994,9 @@
             const item = document.createElement('div');
             item.className = 'social-link-item';
             item.innerHTML = `
-                <div class="form-group" style="flex: 0 0 90px;">
+                <div class="form-group" style="flex: 0 0 100px;">
                     <label>Platform</label>
-                    <input type="text" placeholder="Platform" oninput="updatePreview()">
+                    <input type="text" placeholder="e.g., LinkedIn" oninput="updatePreview()">
                 </div>
                 <div class="form-group">
                     <label>URL</label>
@@ -940,9 +1025,9 @@
                         <div class="toolbar-separator"></div>
                         <button class="toolbar-btn" onclick="openLinkModal(this)" title="Insert Link">Link</button>
                     </div>
-                    <div class="rich-editor" id="${id}" contenteditable="true" data-placeholder="Enter credential..." oninput="updatePreview()" onpaste="handlePaste(event)"></div>
+                    <div class="rich-editor" id="${id}" contenteditable="true" data-placeholder="e.g., Award Winner · Board Member · GitHub Star" oninput="updatePreview()" onpaste="handlePaste(event)"></div>
                 </div>
-                <button class="btn-remove" onclick="removeCredential(this)" title="Remove">×</button>
+                <button class="btn-remove" onclick="removeCredential(this)" title="Remove" style="margin-top: 0;">×</button>
             `;
             container.appendChild(item);
         }
@@ -970,29 +1055,31 @@
         function openLinkModal(btn) {
             const toolbar = btn.closest('.editor-toolbar');
             activeEditor = toolbar.nextElementSibling;
-            
+
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 savedSelection = selection.getRangeAt(0).cloneRange();
                 document.getElementById('linkText').value = selection.toString();
             }
-            
+
             document.getElementById('linkUrl').value = '';
             document.getElementById('linkModal').classList.add('show');
+            setTimeout(() => document.getElementById('linkUrl').focus(), 50);
         }
 
         function openInlineLinkModal(editorId) {
             activeEditor = document.getElementById(editorId);
             activeEditor.focus();
-            
+
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 savedSelection = selection.getRangeAt(0).cloneRange();
                 document.getElementById('linkText').value = selection.toString();
             }
-            
+
             document.getElementById('linkUrl').value = '';
             document.getElementById('linkModal').classList.add('show');
+            setTimeout(() => document.getElementById('linkUrl').focus(), 50);
         }
 
         function closeLinkModal() {
@@ -1004,22 +1091,22 @@
         function insertLink() {
             const text = document.getElementById('linkText').value;
             const url = document.getElementById('linkUrl').value;
-            
+
             if (!url) {
                 closeLinkModal();
                 return;
             }
-            
+
             if (activeEditor && savedSelection) {
                 activeEditor.focus();
                 const selection = window.getSelection();
                 selection.removeAllRanges();
                 selection.addRange(savedSelection);
-                
+
                 const linkHtml = `<a href="${url}">${text || url}</a>`;
                 document.execCommand('insertHTML', false, linkHtml);
             }
-            
+
             closeLinkModal();
             updatePreview();
         }
@@ -1027,12 +1114,12 @@
         function handlePaste(e) {
             const clipboardData = e.clipboardData || window.clipboardData;
             const pastedText = clipboardData.getData('text');
-            
+
             if (pastedText.match(/^https?:\/\//)) {
                 e.preventDefault();
                 const selection = window.getSelection();
                 const selectedText = selection.toString();
-                
+
                 if (selectedText) {
                     const linkHtml = `<a href="${pastedText}">${selectedText}</a>`;
                     document.execCommand('insertHTML', false, linkHtml);
@@ -1058,7 +1145,9 @@
             temp.innerHTML = html;
             temp.querySelectorAll('a').forEach(a => {
                 a.style.color = linkColor;
-                a.style.textDecoration = 'underline';
+                a.style.fontFamily = 'arial, helvetica, sans-serif';
+                a.style.fontSize = '12px';
+                a.removeAttribute('class');
             });
             temp.querySelectorAll('font[color]').forEach(font => {
                 const span = document.createElement('span');
@@ -1071,99 +1160,70 @@
 
         function getSignatureHtml() {
             const name = document.getElementById('name').value;
+            const nameLink = document.getElementById('nameLink').value.trim();
             const role = getEditorContent('roleEditor');
-            const company1 = getEditorContent('company1Editor');
-            const company2 = getEditorContent('company2Editor');
-            const tagline1 = getEditorContent('tagline1Editor');
-            const tagline2 = getEditorContent('tagline2Editor');
-            
+            const tagline = getEditorContent('taglineEditor');
+
             const colorNameBg = document.getElementById('colorNameBg').value;
             const colorNameText = document.getElementById('colorNameText').value;
             const colorBodyText = document.getElementById('colorBodyText').value;
             const colorLink = document.getElementById('colorLink').value;
-            const colorMuted = document.getElementById('colorMuted').value;
-            const colorCredBorder = document.getElementById('colorCredBorder').value;
+            const colorSeparator = document.getElementById('colorSeparator').value;
+            const colorCredText = document.getElementById('colorCredText').value;
 
             const socialLinks = getSocialLinks();
             const credentials = getCredentials();
 
             const roleHtml = processHtmlForOutput(role, colorLink);
-            const company1Html = processHtmlForOutput(company1, colorLink);
-            const company2Html = processHtmlForOutput(company2, colorLink);
-            const tagline1Html = processHtmlForOutput(tagline1, colorLink);
-            const tagline2Html = processHtmlForOutput(tagline2, colorLink);
+            const taglineHtml = processHtmlForOutput(tagline, colorLink);
 
-            let html = `<table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: ${colorBodyText};">
-    <tr>
-        <td style="padding-bottom: 12px;">
-            <span style="display: inline-block; background: ${colorNameBg}; color: ${colorNameText}; font-size: 14px; font-weight: bold; padding: 6px 12px;">${name}</span>
-        </td>
-    </tr>
-    <tr>
-        <td style="padding-bottom: 4px;">
-            <span style="color: ${colorBodyText};">❯ ${roleHtml} </span>
-            ${company1Html}`;
-            
-            if (company2Html) {
-                html += `
-            <span style="color: ${colorBodyText};"> // ⌘ </span>
-            ${company2Html}`;
-            }
-            
-            html += `
-        </td>
-    </tr>`;
-
-            if (tagline1Html || tagline2Html) {
-                let taglineContent = '';
-                if (tagline1Html && tagline2Html) {
-                    taglineContent = `❯ ${tagline1Html} // ${tagline2Html}`;
-                } else if (tagline1Html) {
-                    taglineContent = `❯ ${tagline1Html}`;
-                } else if (tagline2Html) {
-                    taglineContent = `❯ ${tagline2Html}`;
-                }
-                html += `
-    <tr>
-        <td style="padding-bottom: 16px;">
-            <span style="color: ${colorBodyText};">${taglineContent}</span>
-        </td>
-    </tr>`;
+            // Build name badge - linked or plain
+            let nameBadge;
+            if (nameLink) {
+                nameBadge = `<a href="${nameLink}" rel="noopener noreferrer" style="color:${colorNameText};background:${colorNameBg};padding:0.3rem 0.5rem;font-size:0.8rem;text-decoration:unset" target="_blank"><font face="arial, helvetica, sans-serif" style="text-decoration:unset">${name}</font></a>`;
+            } else {
+                nameBadge = `<span style="display:inline-block;background:${colorNameBg};color:${colorNameText};padding:0.3rem 0.5rem;font-size:0.8rem;font-family:arial,helvetica,sans-serif">${name}</span>`;
             }
 
+            let html = `<div dir="ltr"><h2 style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;margin:0px 0px 10px;color:rgb(51,51,51);font-size:16px">${nameBadge}</h2>`;
+
+            // Role line
+            if (roleHtml) {
+                html += `<div><div style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif"><span style="color:${colorBodyText};font-family:arial,helvetica,sans-serif;font-size:12px">❯</span><span style="color:${colorBodyText};font-family:arial,helvetica,sans-serif;font-size:12px">&nbsp;${roleHtml}</span></div>`;
+            }
+
+            // Tagline line
+            if (taglineHtml) {
+                html += `<div style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif"><span style="color:${colorBodyText};font-family:arial,helvetica,sans-serif;font-size:12px">❯</span><span style="color:${colorBodyText};font-family:arial,helvetica,sans-serif;font-size:12px">&nbsp;${taglineHtml}</span></div>`;
+            }
+
+            // Social links
             if (socialLinks.length > 0) {
-                html += `
-    <tr>
-        <td style="padding-bottom: 16px;">`;
+                html += `<div style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif"><font face="arial, helvetica, sans-serif" style="color:rgb(116,120,126)"><br></font>`;
                 socialLinks.forEach((link, i) => {
                     if (i > 0) {
-                        html += `
-            <span style="color: ${colorMuted};"> | </span>`;
+                        html += `<span style="color:${colorSeparator};font-size:12px">&nbsp;|&nbsp;</span>`;
                     }
-                    html += `
-            <a href="${link.url}" style="color: ${colorLink}; text-decoration: underline;">${link.platform}</a>`;
+                    html += `<a href="${link.url}" rel="noopener noreferrer" style="font-size:12px;color:${colorLink}" target="_blank"><font style="vertical-align:inherit">${link.platform}</font></a>`;
                 });
-                html += `
-        </td>
-    </tr>`;
+                html += `</div>`;
             }
 
+            // Credentials
             if (credentials.length > 0) {
-                html += `
-    <tr>
-        <td style="border-left: 3px solid ${colorCredBorder}; padding-left: 12px; font-size: 13px; color: ${colorMuted}; line-height: 1.8;">`;
+                html += `<div style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif"><span style="color:rgb(116,120,126)"><span style="color:${colorSeparator};font-size:12px"><br></span></span></div>`;
                 credentials.forEach((cred, i) => {
                     const processedCred = processHtmlForOutput(cred, colorLink);
-                    if (i > 0) html += '<br>';
-                    html += processedCred;
+                    html += `<div style="font-family:Roboto,RobotoDraft,Helvetica,Arial,sans-serif;border-left:1px solid ${colorCredText};padding-left:5px"><font color="${colorCredText}" face="arial, helvetica, sans-serif"><span style="font-size:12px;color:${colorCredText}">${processedCred}</span></font></div>`;
                 });
-                html += `
-        </td>
-    </tr>`;
             }
 
-            html += `
-</table>`;
+            // Close role div if opened
+            if (roleHtml) {
+                html += `</div>`;
+            }
+
+            html += `</div>`;
 
             return html;
         }
@@ -1176,7 +1236,7 @@
             const html = getSignatureHtml();
             const blob = new Blob([html], { type: 'text/html' });
             const plainBlob = new Blob([document.getElementById('signatureOutput').innerText], { type: 'text/plain' });
-            
+
             navigator.clipboard.write([
                 new ClipboardItem({
                     'text/html': blob,
@@ -1218,7 +1278,6 @@
         });
 
         document.addEventListener('keydown', (e) => {
-            // Cmd/Ctrl + K to open link modal
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 const activeEl = document.activeElement;
@@ -1234,15 +1293,13 @@
                     setTimeout(() => document.getElementById('linkUrl').focus(), 50);
                 }
             }
-            
-            // Escape to close modals
+
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
                 activeEditor = null;
                 savedSelection = null;
             }
-            
-            // Enter to submit link modal
+
             if (e.key === 'Enter' && document.getElementById('linkModal').classList.contains('show')) {
                 e.preventDefault();
                 insertLink();
